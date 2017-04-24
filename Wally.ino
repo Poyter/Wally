@@ -29,7 +29,7 @@ int clawServoPin = 8;
 int armServoPin = 9;
 int pushPin = 10;
 int dropperServoPin = 11;
-
+int touchPin = 12;
 int led = 13;
 
 /*
@@ -64,6 +64,7 @@ void setup(){
   pinMode(echoPinBack, OUTPUT);
   pinMode(startPin, INPUT_PULLUP);
   pinMode(led, OUTPUT);                                       // LEDs to check sensor
+  pinMode(touchPin, INPUT);                                //Pin for button
   Wire.begin();                                               // Begin I2C bus
   Serial.begin(9600);                                         // Begin serial
   delay(100);                                                 // Wait for everything to power up
@@ -372,6 +373,7 @@ void forward(float distance, int DualSpeedValue){
   if (distance > 0){
     if (abs(encoder1()) <= abs(distance) && abs(encoder2()) <= abs(distance)){
       checkForwardDistance();
+      button();                                                                   //Checks the button in the claw
       Wire.beginTransmission(MD25ADDRESS);
       Wire.write(ACCELERATION);
       Wire.write(1);
@@ -587,5 +589,18 @@ void YELLOW(){
   drop();
   rocket();
   delay(30000);
+}
+
+
+void button(){
+    if(digitalRead(touchPin)==HIGH){
+      digitalWrite(led, HIGH);
+      delay(50);
+      button();
+    }
+    else{
+      digitalWrite(led, LOW);
+      delay(50);
+    }
 }
 
